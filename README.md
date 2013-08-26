@@ -7,6 +7,6 @@ wasted.io SPDY Demo
 mvn compile exec:exec -Prun
 ```
 
-Connect with your browser to https://your.ip:5555/
+Connect with your browser to https://your.ip:8765/
 
 
