@@ -21,7 +21,17 @@
     </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <npn.version>1.1.0.v20120525</npn.version>
+	<npn.version>1.1.0.v20120525</npn.version>
+	<!--
+	     http://www.eclipse.org/jetty/documentation/current/npn-chapter.html#npn-versions
+	     Use the following versions for the respective OpenJDK releases:
+	     1.0.0.v20120402	1.7.0 - 1.7.0u2 - 1.7.0u3
+	     1.1.0.v20120525	1.7.0u4 - 1.7.0u5
+	     1.1.1.v20121030	1.7.0u6 - 1.7.0u7
+	     1.1.3.v20130313	1.7.0u9 - 1.7.0u10 - 1.7.0u11
+	     1.1.4.v20130313	1.7.0u13
+	     1.1.5.v20130313	1.7.0u15 - 1.7.0u17 - 1.7.0u21 - 1.7.0u25
+	     -->
         <npn.boot.version>1.1.5.v20130313</npn.boot.version>
     </properties>
     <dependencies>
@@ -49,7 +59,7 @@
         <dependency>
             <groupId>io.wasted</groupId>
             <artifactId>wasted-util_2.10</artifactId>
-            <version>0.5.4</version>
+            <version>0.5.6</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

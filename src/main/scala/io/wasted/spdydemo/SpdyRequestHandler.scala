@@ -35,37 +35,41 @@ class SpdyRequestHandler extends HttpRequestHandler {
    * @param name Resource name (e.g. foo.xml)
    * @param message Body to be delivered
    * @param contentType Content-Type to be transmitted in Headers
-   * @param fin Finish this stream
    */
   def pushContent(ctx: ChannelHandlerContext, msg: FullHttpRequest, currentStreamId: Int,
-                  name: String, message: String, contentType: String, fin: Boolean) {
+                  name: String, message: String, contentType: String) {
     // this is not really safe and should not be used in production ;)
     val url = s"https://${msg.headers().get("host")}/$name"
     println(s"Pushing resource: $url")
 
     // Allocate the buffer for our message
     val buf = Unpooled.copiedBuffer(message, CharsetUtil.UTF_8)
-    // Create a SPDY Data frame
-    val content = new DefaultSpdyDataFrame(currentStreamId, buf)
-
-    content.setLast(fin)
 
     // Create headers for the Stream-Id the Server is using and reference the stream-ID the client uses.
-    //val headers = new DefaultSpdyHeadersFrame(ourSpdyId)
-    val headers = new DefaultSpdySynStreamFrame(ourSpdyId, currentStreamId, 0)
-    headers.setUnidirectional(true)
+    // announce the push
+    val pushHeaders = new DefaultSpdySynStreamFrame(ourSpdyId, currentStreamId, 0)
+    pushHeaders.setUnidirectional(true)
+    SpdyHeaders.setUrl(2, pushHeaders, url)
+    pushHeaders.setLast(false)
+    ctx.channel().write(pushHeaders)
+    
+    // send the headers
+    val headers = new DefaultSpdyHeadersFrame(ourSpdyId)
     SpdyHeaders.setStatus(2, headers, OK)
     SpdyHeaders.setVersion(2, headers, msg.getProtocolVersion)
-    SpdyHeaders.setUrl(2, headers, url)
     headers.headers().add("Content-Type", contentType)
     headers.headers().add("Content-Length", buf.readableBytes())
-    headers.setLast(false)
-
     ctx.channel().write(headers)
+
+    // send the content
+    // Create a SPDY Data frame
+    val content = new DefaultSpdyDataFrame(ourSpdyId, buf)
+    content.setLast(true)
     ctx.channel().write(content)
-    println(headers.toString)
-    println(content.toString)
-    println("----")
+    ctx.channel().flush()
+
+    // increment spdy stream id for the next push
+    ourSpdyId += 2
   }
 
   override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest) {
@@ -102,8 +106,8 @@ class SpdyRequestHandler extends HttpRequestHandler {
     ctx.channel().writeAndFlush(settings)
 
     // Push our site.js and style.css
-    pushContent(ctx, msg, currentStreamId, "site.js", "alert('via SPDY!');", "text/javascript; charset=utf-8", false)
-    pushContent(ctx, msg, currentStreamId, "style.css", "body { background-color: gray; }", "text/css", false)
+    pushContent(ctx, msg, currentStreamId, "site.js", "alert('via SPDY!');", "text/javascript; charset=utf-8")
+    pushContent(ctx, msg, currentStreamId, "style.css", "body { background-color: gray; }", "text/css")
 
     // Reply on the request (client initiated) stream with the HTML
     // which tells the client to consume pushed resources
