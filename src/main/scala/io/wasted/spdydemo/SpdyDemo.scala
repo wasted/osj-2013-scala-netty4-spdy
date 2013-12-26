@@ -7,7 +7,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.channel.socket.SocketChannel
 
 import scala.util.Try
-import io.wasted.util._
 import io.netty.handler.ssl.SslHandler
 import scala.util.Failure
 import scala.Some
@@ -16,7 +15,7 @@ import org.eclipse.jetty.npn.NextProtoNego
 import java.security.KeyStore
 import javax.net.ssl.{ SSLContext, KeyManagerFactory }
 
-object SpdyDemo extends App with Logger { PS =>
+object SpdyDemo extends App { PS =>
   private var eventLoop1: Option[NioEventLoopGroup] = None
   private var eventLoop2: Option[NioEventLoopGroup] = None
 
@@ -28,7 +27,6 @@ object SpdyDemo extends App with Logger { PS =>
 
     val keystore = KeyStore.getInstance("JKS")
     keystore.load(BogusKeyStore.asInputStream(), BogusKeyStore.password)
-
     val kmf = KeyManagerFactory.getInstance("SunX509")
     kmf.init(keystore, BogusKeyStore.password)
 
@@ -60,14 +58,14 @@ object SpdyDemo extends App with Logger { PS =>
           }
         })
       srv.bind().syncUninterruptibly()
-      info("Listening on %s:%s", addr.getAddress.getHostAddress, addr.getPort)
+      println("Listening on " + addr.getPort)
       srv
     } match {
       case Success(v) =>
-      case Failure(f) => error("Unable to bind to %s:%s", addr.getAddress.getHostAddress, addr.getPort); stop()
+      case Failure(f) => println("Unable to bind to " + addr.getPort); stop()
     }
 
-    info("Ready")
+    //info("Ready")
 
     // Add Shutdown Hook to cleanly shutdown Netty
     Runtime.getRuntime.addShutdownHook(new Thread {
@@ -76,7 +74,7 @@ object SpdyDemo extends App with Logger { PS =>
   }
 
   def stop() {
-    info("Shutting down")
+    //info("Shutting down")
 
     // Shut down all event loops to terminate all threads.
     eventLoop1.map(_.shutdownGracefully())
@@ -85,6 +83,6 @@ object SpdyDemo extends App with Logger { PS =>
     eventLoop2.map(_.shutdownGracefully())
     eventLoop2 = None
 
-    info("Shutdown complete")
+    //info("Shutdown complete")
   }
 }

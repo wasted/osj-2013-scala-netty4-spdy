@@ -3,10 +3,8 @@ package io.wasted.spdydemo
 import io.netty.channel.{ ChannelFutureListener, SimpleChannelInboundHandler, ChannelHandlerContext}
 import io.netty.handler.codec.http.{FullHttpRequest, HttpHeaders}
 import io.netty.handler.codec.http.HttpResponseStatus._
-import io.wasted.util.Logger
-import io.wasted.util.http.ExceptionHandler
 
-class HttpRequestHandler extends SimpleChannelInboundHandler[FullHttpRequest]() with Logger {
+class HttpRequestHandler extends SimpleChannelInboundHandler[FullHttpRequest]() {
 
   override def channelRead0(ctx: ChannelHandlerContext, msg: FullHttpRequest) {
     val keepAlive = HttpHeaders.isKeepAlive(msg)
@@ -18,7 +16,7 @@ class HttpRequestHandler extends SimpleChannelInboundHandler[FullHttpRequest]() 
   }
 
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-    ExceptionHandler.apply(ctx, cause).map(_.printStackTrace)
+    //ExceptionHandler.apply(ctx, cause).map(_.printStackTrace)
     //if (ctx.channel().isOpen) ctx.close()
   }
 }

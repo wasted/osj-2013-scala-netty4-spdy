@@ -4,7 +4,6 @@ import io.netty.handler.codec.spdy.SpdyOrHttpChooser
 import io.netty.handler.codec.spdy.SpdyOrHttpChooser.SelectedProtocol
 import org.eclipse.jetty.npn.NextProtoNego
 import io.netty.channel.ChannelHandlerContext
-import io.wasted.util.http.ExceptionHandler
 import javax.net.ssl.SSLEngine
 
 class SpdyOrHttpHandler extends SpdyOrHttpChooser(1024 * 1024, 1024 * 1024) {
@@ -25,7 +24,7 @@ class SpdyOrHttpHandler extends SpdyOrHttpChooser(1024 * 1024, 1024 * 1024) {
   override protected def createHttpRequestHandlerForSpdy() = new SpdyRequestHandler
 
   override def exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-    ExceptionHandler.apply(ctx, cause).map(_.printStackTrace)
+    //ExceptionHandler.apply(ctx, cause).map(_.printStackTrace)
     if (ctx.channel().isOpen) ctx.close()
   }
 }
