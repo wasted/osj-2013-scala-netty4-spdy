@@ -22,41 +22,13 @@ object SpdyDemo extends App { PS =>
   override def main(args: Array[String]): Unit = start()
 
   def start() {
-    def showJvmArg() = {
-      import java.lang.management.ManagementFactory
-      import java.lang.management.RuntimeMXBean
-      import scala.collection.JavaConversions._
-      val runtimeMxBean: RuntimeMXBean = ManagementFactory.getRuntimeMXBean()
-      val arguments = runtimeMxBean.getInputArguments()
-
-      println("Logging the JVM arguments at runtime.")
-      for (arg <- arguments) println("JVM Arg:" + arg)
-    }
-    showJvmArg()
-
-
-
     eventLoop1 = Some(new NioEventLoopGroup)
     eventLoop2 = Some(new NioEventLoopGroup)
-
-
-
-
-
-
 
     val keystore = KeyStore.getInstance("JKS")
     keystore.load(BogusKeyStore.asInputStream(), BogusKeyStore.password)
     val kmf = KeyManagerFactory.getInstance("SunX509")
     kmf.init(keystore, BogusKeyStore.password)
-
-
-
-
-
-
-
-
 
     val context = SSLContext.getInstance("TLS")
     context.init(kmf.getKeyManagers, null, null)
