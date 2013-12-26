@@ -43,3 +43,11 @@ target
 # 
 src/main/resources/props/*
 
+# For SBT compiler
+project/boot/
+project/build/target/
+project/plugins/target/
+project/plugins/lib_managed/
+project/plugins/src_managed/
+
+
